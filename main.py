@@ -1,4 +1,5 @@
 import pygame
+import alienController as ALC
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -6,6 +7,8 @@ clock = pygame.time.Clock()
 running = True
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+
+alien1 = ALC.Alien(screen.get_width() / 2, screen.get_height() / 2)
 
 while running:
     for event in pygame.event.get():
@@ -27,6 +30,9 @@ while running:
         player_pos.y -= 10
     if keys[pygame.K_DOWN]:
         player_pos.y += 10
+
+    # Aliens
+    ALC.draw_alien(alien1)
 
     pygame.display.flip()
 
