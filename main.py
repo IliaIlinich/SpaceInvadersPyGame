@@ -26,7 +26,7 @@ if __name__ == "__main__":
         # Draw player
         pygame.draw.circle(screen, "green", player_pos, 40)
 
-        # Basic player movement
+        # (Temporary) Basic player movement
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             player_pos.x -= 10
@@ -38,7 +38,7 @@ if __name__ == "__main__":
             player_pos.y += 10
 
         # Draw alien
-        ALC.draw_alien(alien1)
+        alien1.draw()
 
         # Update the display
         pygame.display.flip()

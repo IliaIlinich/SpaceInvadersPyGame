@@ -1,12 +1,13 @@
 import pygame
+import main
+
+# Get screen data from the main module
+screen = main.screen
 
 # General alien class
 class Alien:
     def __init__(self, pos_x, pos_y):
         self.position = pygame.Vector2(pos_x, pos_y)
-
-screen = pygame.display.set_mode((1280, 720))
-
-# (Temporary) function to draw an alien
-def draw_alien(alien_in):
-    pygame.draw.circle(screen, "red", alien_in.position, 30)
+    
+    def draw(self):
+        pygame.draw.circle(screen, "red", self.position, 30)
