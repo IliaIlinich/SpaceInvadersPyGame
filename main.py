@@ -38,7 +38,7 @@ if __name__ == "__main__":
             player_pos.y += 10
 
         # Draw alien
-        alien1.draw()
+        alien1.draw(screen)
 
         # Update the display
         pygame.display.flip()
