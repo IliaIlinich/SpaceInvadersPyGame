@@ -1,5 +1,6 @@
 import pygame
 import alienController as ALC
+import alienLevels as ALL
 
 # Initialize Pygame
 pygame.init()
@@ -10,9 +11,7 @@ running = True
 # Player setup
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
-# Alien setup
-alien1 = ALC.Alien(screen.get_width() / 3, screen.get_height() / 3)
-pygame.time.set_timer(alien1.timer_move, 1000)  # Alien movement timer
+level_flag = 0
 
 # Main loop
 if __name__ == "__main__":
@@ -39,23 +38,7 @@ if __name__ == "__main__":
                 if keys[pygame.K_DOWN]:
                     player_pos.y += 10
 
-                # Movement test
-                if event.type == alien1.timer_move:
-                    if alien1.stage == 0:
-                        alien1.move_right()
-                        alien1.stage += 1
-                    elif alien1.stage == 1:
-                        alien1.move_down()
-                        alien1.stage += 1
-                    elif alien1.stage == 2:
-                        alien1.move_left()
-                        alien1.stage += 1
-                    elif alien1.stage == 3:
-                        alien1.move_up()
-                        alien1.stage = 0
-
-                # Draw alien
-                alien1.draw(screen)
+                ALL.level1()
 
                 # Update the display
                 pygame.display.flip()

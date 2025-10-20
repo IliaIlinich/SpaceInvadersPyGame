@@ -4,11 +4,12 @@ import pygame
 class Alien:
     def __init__(self, pos_x, pos_y):
         self.position = pygame.Vector2(pos_x, pos_y)
-        self.stage = 0 # Terminal variable for movement testing
-        self.timer_move = pygame.USEREVENT + 1
 
     def draw(self, surface):
         pygame.draw.circle(surface, "red", self.position, 30)
+
+    def get_position(self):
+        return self.position
 
     # Movement
     def move_right(self):
