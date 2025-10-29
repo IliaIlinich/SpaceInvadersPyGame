@@ -2,6 +2,7 @@ import pygame
 import random
 import alienController as ALC
 import alienLevels as ALL
+from playerControler import Player as PC
 
 # Initialize Pygame
 pygame.init()
@@ -10,7 +11,7 @@ clock = pygame.time.Clock()
 running = True
 
 # Player setup
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 1.5)
+player = PC(screen)
 
 # level setup
 level1 = ALL.level(screen, 0)
@@ -93,19 +94,10 @@ if __name__ == "__main__":
         screen.fill("black")
 
         # Draw player
-        pygame.draw.circle(screen, "green", (int(player_pos.x), int(player_pos.y)), 40)
+        pygame.draw.circle(screen, "green", (int(player.player_pos.x), int(player.player_pos.y)), 40)
 
         # Continuous player movement (checks keys every frame)
-        keys = pygame.key.get_pressed()
-        speed = 5
-        if keys[pygame.K_LEFT]:
-            player_pos.x -= speed
-        if keys[pygame.K_RIGHT]:
-            player_pos.x += speed
-        if keys[pygame.K_UP]:
-            player_pos.y -= speed
-        if keys[pygame.K_DOWN]:
-            player_pos.y += speed
+        PC.input(player)
 
         # Draw level
         level1.draw_level(screen)
