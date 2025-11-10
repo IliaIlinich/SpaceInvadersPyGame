@@ -20,8 +20,7 @@ level1 = ALL.level(screen, 0)
 # Aliens & Bullets
 bullets = []
 ALIEN_SHOOT_EVENT = pygame.USEREVENT + 1
-pygame.time.set_timer(ALIEN_SHOOT_EVENT, 3000 - level1.difficulty * 100)  # Adjust shooting frequency based on difficulty
-# FIX LATER, so at some point the timer is not less than 0!!!!!!!!
+pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
 
 # Alien movement event
 ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
@@ -50,6 +49,7 @@ if __name__ == "__main__":
                 if animation_iter >= len(alien_sprites):
                     animation_iter = 0
             elif event.type == ALIEN_SHOOT_EVENT: # Event for bullets shooting
+                pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
                 for i in range(random.randint(1, 3)):
                     cnt = 0 # Counter to find the correct alien to shoot
                     alien_index = random.randint(0, 54)
