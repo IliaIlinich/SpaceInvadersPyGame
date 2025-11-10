@@ -25,5 +25,5 @@ class Alien:
 
     def shoot(self, screen, arr_bullets_in):
         new_bullet = bulletController.Bullet(self.position.x, self.position.y)
-        pygame.draw.circle(screen, "white", self.position, 10)
+        pygame.draw.rect(screen, "white", (self.position.x, self.position.y, 5, 10))
         arr_bullets_in.append(new_bullet)

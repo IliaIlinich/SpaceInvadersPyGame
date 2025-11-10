@@ -28,7 +28,6 @@ ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
 pygame.time.set_timer(ALIEN_MOVE_EVENT, 600)
 current_movement = "right"
 
-# Fix later
 alien_sprites = [pygame.image.load("./Sprites/Aliens/alien_1_sprite_1.png"),
                 pygame.image.load("./Sprites/Aliens/alien_1_sprite_2.png")]
 alien_sprites[0] = pygame.transform.scale(alien_sprites[0], (70, 70))
@@ -50,7 +49,7 @@ if __name__ == "__main__":
                 animation_iter += 1
                 if animation_iter >= len(alien_sprites):
                     animation_iter = 0
-            elif event.type == ALIEN_SHOOT_EVENT: # Event for bullets update
+            elif event.type == ALIEN_SHOOT_EVENT: # Event for bullets shooting
                 for i in range(random.randint(1, 3)):
                     cnt = 0 # Counter to find the correct alien to shoot
                     alien_index = random.randint(0, 54)
@@ -65,9 +64,6 @@ if __name__ == "__main__":
                                 break
                             else:
                                 cnt += 1
-                    for bullet in bullets:
-                        if bullet.position.y > 720:
-                            bullets.remove(bullet)
             elif event.type == ALIEN_MOVE_EVENT: # Event for alien movement
                 if current_movement == "right":
                     edge_reached = False
@@ -117,17 +113,14 @@ if __name__ == "__main__":
         PC.input(player)
 
         # Draw level
-        level1.draw_level(screen)
+        level1.draw_level(screen, alien_sprites, animation_iter)
 
-        # Draw Aliens
-        for row in level1.alien_list:
-            for alien in row:
-                screen.blit(alien_sprites[animation_iter], (alien.get_position().x, alien.get_position().y))
-
-        # Bullets
+        # Bullets position update
         for bullet in bullets:
             bullet.move()
-            pygame.draw.circle(screen, "white", bullet.position, 10)
+            pygame.draw.rect(screen, "white", (bullet.position.x, bullet.position.y, 5, 10))
+            if bullet.position.y > 720:
+                bullets.remove(bullet)
 
         # Update the display
         pygame.display.flip()
