@@ -6,10 +6,6 @@ class Alien:
     def __init__(self, pos_x, pos_y):
         self.position = pygame.Vector2(pos_x, pos_y)
 
-    def draw(self, screen):
-        #pygame.draw.circle(screen, "red", self.position, 30)
-        i = 0 # just some code so no error
-
     def get_position(self):
         return self.position
 
