@@ -1,12 +1,12 @@
 import pygame
 import random
-import alienController as ALC
+import itertools
 import alienLevels as ALL
 from playerControler import Player as PC
 
-
 # Initialize Pygame
 pygame.init()
+font = pygame.font.SysFont('Arial', 24)
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
@@ -14,7 +14,7 @@ running = True
 # Player setup
 player = PC(screen)
 
-# level setup
+# Level setup
 level1 = ALL.level(screen, 0)
 
 # Aliens & Bullets
@@ -25,10 +25,13 @@ pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
 # Alien movement event
 ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
 pygame.time.set_timer(ALIEN_MOVE_EVENT, 600)
+
 current_movement = "right"
 
-alien_sprites = [pygame.image.load("./Sprites/Aliens/alien_1_sprite_1.png"),
-                pygame.image.load("./Sprites/Aliens/alien_1_sprite_2.png")]
+alien_sprites = [
+    pygame.image.load("./Sprites/Aliens/alien_1_sprite_1.png"),
+    pygame.image.load("./Sprites/Aliens/alien_1_sprite_2.png")
+]
 alien_sprites[0] = pygame.transform.scale(alien_sprites[0], (70, 70))
 alien_sprites[1] = pygame.transform.scale(alien_sprites[1], (70, 70))
 
@@ -36,42 +39,40 @@ animation_iter = 0
 ALIEN_ANIMATION_EVENT = pygame.USEREVENT + 3
 pygame.time.set_timer(ALIEN_ANIMATION_EVENT, 600)
 
+current_stage = "menu"
+menu_game_logo = pygame.image.load("./Sprites/Space_Invaders_Logo.jpg")
+menu_game_logo = pygame.transform.scale(menu_game_logo, (500, 500))
 
-# Main loop
-if __name__ == "__main__":
-    while running:
-        # handle events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: # Check for quitting the game
+start_button = pygame.Rect(screen.get_width() * 0.33 - 50, screen.get_height() * 0.75, 100, 50)
+quit_button = pygame.Rect(screen.get_width() * 0.66 - 50, screen.get_height() * 0.75, 100, 50)
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if current_stage == "menu" and event.type == pygame.MOUSEBUTTONDOWN:
+            if start_button.collidepoint(event.pos):
+                current_stage = "game"
+            if quit_button.collidepoint(event.pos):
                 running = False
-            elif event.type == ALIEN_ANIMATION_EVENT: # Event for alien animation
+        if current_stage == "game":
+            if event.type == ALIEN_ANIMATION_EVENT:
                 animation_iter += 1
                 if animation_iter >= len(alien_sprites):
                     animation_iter = 0
-            elif event.type == ALIEN_SHOOT_EVENT: # Event for bullets shooting
+            elif event.type == ALIEN_SHOOT_EVENT:
                 pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
-                for i in range(random.randint(1, 3)):
-                    cnt = 0 # Counter to find the correct alien to shoot
-                    alien_index = random.randint(0, 54)
-                    alien_found = False
-                    for row in level1.alien_list:
-                        if alien_found:
-                            break
-                        for alien in row:
-                            if cnt == alien_index:
-                                alien.shoot(screen, bullets)
-                                alien_found = True
-                                break
-                            else:
-                                cnt += 1
-            elif event.type == ALIEN_MOVE_EVENT: # Event for alien movement
+                for _ in range(random.randint(1, 3)):
+                    all_aliens = list(itertools.chain.from_iterable(level1.alien_list))
+                    if all_aliens:
+                        alien = random.choice(all_aliens)
+                        alien.shoot(screen, bullets)
+            elif event.type == ALIEN_MOVE_EVENT:
                 if current_movement == "right":
-                    edge_reached = False
-                    for row in level1.alien_list:
-                        for alien in row:
-                            if alien.get_position().x >= screen.get_width() - 60:
-                                edge_reached = True
-                                break
+                    edge_reached = any(
+                        alien.get_position().x >= screen.get_width() - 60
+                        for row in level1.alien_list for alien in row
+                    )
                     if edge_reached:
                         current_movement = "down"
                     else:
@@ -79,12 +80,10 @@ if __name__ == "__main__":
                             for alien in row:
                                 alien.move_right()
                 elif current_movement == "left":
-                    edge_reached = False
-                    for row in level1.alien_list:
-                        for alien in row:
-                            if alien.get_position().x <= 60:
-                                edge_reached = True
-                                break
+                    edge_reached = any(
+                        alien.get_position().x <= 60
+                        for row in level1.alien_list for alien in row
+                    )
                     if edge_reached:
                         current_movement = "down"
                     else:
@@ -95,38 +94,48 @@ if __name__ == "__main__":
                     for row in level1.alien_list:
                         for alien in row:
                             alien.move_down()
-                    # After moving down, decide next horizontal direction
-                    rightmost_x = max(alien.get_position().x for row in level1.alien_list for alien in row)
-                    leftmost_x = min(alien.get_position().x for row in level1.alien_list for alien in row)
-                    if rightmost_x >= screen.get_width() - 60:
-                        current_movement = "left"
-                    else:
-                        current_movement = "right"
-        
-        # per-frame update & render (outside the event loop)
-        screen.fill("black")
+                    all_aliens = list(itertools.chain.from_iterable(level1.alien_list))
+                    if all_aliens:
+                        rightmost_x = max(alien.get_position().x for alien in all_aliens)
+                        if rightmost_x >= screen.get_width() - 60:
+                            current_movement = "left"
+                        else:
+                            current_movement = "right"
 
-        # Draw player
+    screen.fill("black")
+
+    mouse_pos = pygame.mouse.get_pos()
+
+    if current_stage == "menu":
+        # Menu rendering
+        screen.blit(menu_game_logo, (screen.get_width() / 2 - 250, 50))
+
+        # Start button
+        start_color = (0, 255, 0) if start_button.collidepoint(mouse_pos) else (255, 255, 255)
+        pygame.draw.rect(screen, start_color, start_button, width=3)
+        text_start = font.render('START', True, start_color)
+        screen.blit(text_start, text_start.get_rect(center=start_button.center))
+
+        # Quit button
+        quit_color = (255, 0, 0) if quit_button.collidepoint(mouse_pos) else (255, 255, 255)
+        pygame.draw.rect(screen, quit_color, quit_button, width=3)
+        text_quit = font.render('QUIT', True, quit_color)
+        screen.blit(text_quit, text_quit.get_rect(center=quit_button.center))
+
+    elif current_stage == "game":
         pygame.draw.circle(screen, "green", (int(player.player_pos.x), int(player.player_pos.y)), 40)
-
-        # Continuous player movement (checks keys every frame)
         PC.input(player)
 
-        # Draw level
+        # Draw aliens
         level1.draw_level(screen, alien_sprites, animation_iter)
 
-        # Bullets position update
-        for bullet in bullets:
+        for bullet in bullets[:]:
             bullet.move()
             pygame.draw.rect(screen, "white", (bullet.position.x, bullet.position.y, 5, 10))
             if bullet.position.y > 720:
                 bullets.remove(bullet)
 
-        # Update the display
-        pygame.display.flip()
+    pygame.display.flip()
+    clock.tick(60)
 
-        # cap fps
-        clock.tick(60)
-
-# Quit Pygame
 pygame.quit()
