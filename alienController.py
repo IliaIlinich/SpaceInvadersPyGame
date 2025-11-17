@@ -19,7 +19,6 @@ class Alien:
     def move_down(self):
         self.position.y += 60
 
-    def shoot(self, screen, arr_bullets_in):
-        new_bullet = bulletController.Bullet(self.position.x, self.position.y)
-        pygame.draw.rect(screen, "white", (self.position.x, self.position.y, 5, 10))
-        arr_bullets_in.append(new_bullet)
+    def shoot(self, screen, arr_bullets_in, bullet_type):
+        new_bullet = bulletController.Bullet(self.position.x, self.position.y, bullet_type)
+        new_bullet.draw(screen, arr_bullets_in)

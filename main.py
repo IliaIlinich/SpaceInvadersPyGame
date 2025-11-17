@@ -47,9 +47,13 @@ start_button = pygame.Rect(screen.get_width() * 0.33 - 50, screen.get_height() *
 quit_button = pygame.Rect(screen.get_width() * 0.66 - 50, screen.get_height() * 0.75, 100, 50)
 
 while running:
+    # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                current_stage = "menu"
         if current_stage == "menu" and event.type == pygame.MOUSEBUTTONDOWN:
             if start_button.collidepoint(event.pos):
                 current_stage = "game"
@@ -66,7 +70,7 @@ while running:
                     all_aliens = list(itertools.chain.from_iterable(level1.alien_list))
                     if all_aliens:
                         alien = random.choice(all_aliens)
-                        alien.shoot(screen, bullets)
+                        alien.shoot(screen, bullets, random.choice(['s', 'w', 't']))
             elif event.type == ALIEN_MOVE_EVENT:
                 if current_movement == "right":
                     edge_reached = any(
@@ -129,12 +133,11 @@ while running:
         # Draw aliens
         level1.draw_level(screen, alien_sprites, animation_iter)
 
+        # Move and draw bullets
         for bullet in bullets[:]:
-            bullet.move()
-            pygame.draw.rect(screen, "white", (bullet.position.x, bullet.position.y, 5, 10))
-            if bullet.position.y > 720:
-                bullets.remove(bullet)
+            bullet.move(screen, bullets)
 
+    # Screen update and fps lock
     pygame.display.flip()
     clock.tick(60)
 
