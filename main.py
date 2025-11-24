@@ -11,9 +11,6 @@ screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
 
-# Player setup
-player = PC(screen)
-
 # Level setup
 level1 = ALL.level(screen, 0)
 
@@ -21,6 +18,9 @@ level1 = ALL.level(screen, 0)
 bullets = []
 ALIEN_SHOOT_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
+
+# Player setup
+player = PC(screen)
 
 # Alien movement event
 ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
@@ -128,7 +128,7 @@ while running:
 
     elif current_stage == "game":
         pygame.draw.circle(screen, "green", (int(player.player_pos.x), int(player.player_pos.y)), 40)
-        PC.input(player)
+        PC.input(player, bullets)
 
         # Draw aliens
         level1.draw_level(screen, alien_sprites, animation_iter)

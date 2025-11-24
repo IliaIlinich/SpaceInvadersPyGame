@@ -1,12 +1,15 @@
 import pygame
+import bulletController
 
 class Player:
     def __init__(self, screen):
+        self.screen = screen
         self.player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 1.1)
         self.shoot_cooldown = 0
-        
+        self.lives = 3 
 
-    def input(self):
+
+    def input(self, bullets):
         self.shoot_cooldown -= 1
         keys = pygame.key.get_pressed()
         speed = 5
@@ -17,7 +20,8 @@ class Player:
         if keys[pygame.K_SPACE]:
             if self.shoot_cooldown <= 0:
                 self.shoot_cooldown = 60
-                self.shoot()
+                self.shoot(bullets)
     
-    def shoot(self):
-        print("shoot")
+    def shoot(self, bullets):
+        new_bullet = bulletController.Bullet(self.player_pos.x, self.player_pos.y, "p")
+        new_bullet.draw(self.screen, bullets)
