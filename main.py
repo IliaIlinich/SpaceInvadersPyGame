@@ -150,7 +150,6 @@ while running:
                 if player.lives <= 0:
                     current_stage = "menu"
                     break
-            for alien in AC
 
     # Screen update and fps lock
     pygame.display.flip()
