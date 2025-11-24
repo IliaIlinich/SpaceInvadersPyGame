@@ -5,8 +5,9 @@ class Player:
     def __init__(self, screen):
         self.screen = screen
         self.player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 1.1)
+        self.player_rect = ""
         self.shoot_cooldown = 0
-        self.lives = 3 
+        self.lives = 4
 
 
     def input(self, bullets):

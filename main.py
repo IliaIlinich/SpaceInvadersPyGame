@@ -35,6 +35,9 @@ alien_sprites = [
 alien_sprites[0] = pygame.transform.scale(alien_sprites[0], (70, 70))
 alien_sprites[1] = pygame.transform.scale(alien_sprites[1], (70, 70))
 
+player_sprite = pygame.image.load("./Sprites/player_sprite.png")
+player_sprite = pygame.transform.scale(player_sprite, (70,40))
+
 animation_iter = 0
 ALIEN_ANIMATION_EVENT = pygame.USEREVENT + 3
 pygame.time.set_timer(ALIEN_ANIMATION_EVENT, 600)
@@ -127,7 +130,8 @@ while running:
         screen.blit(text_quit, text_quit.get_rect(center=quit_button.center))
 
     elif current_stage == "game":
-        pygame.draw.circle(screen, "green", (int(player.player_pos.x), int(player.player_pos.y)), 40)
+        screen.blit(player_sprite, (int(player.player_pos.x)-35, int(player.player_pos.y)))
+        player_rect = pygame.Rect((int(player.player_pos.x)-35, int(player.player_pos.y)+10), (70,40))
         PC.input(player, bullets)
 
         # Draw aliens
@@ -136,6 +140,17 @@ while running:
         # Move and draw bullets
         for bullet in bullets[:]:
             bullet.move(screen, bullets)
+
+        for bullet in bullets[:]:
+            bullet_rect = pygame.Rect(bullet.position, (5,10))
+            if player_rect.colliderect(bullet_rect):
+                bullets.remove(bullet)
+                player.lives-=1
+                player.player_pos.x = screen.get_width()/2
+                if player.lives <= 0:
+                    current_stage = "menu"
+                    break
+            for alien in AC
 
     # Screen update and fps lock
     pygame.display.flip()
