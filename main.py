@@ -148,7 +148,9 @@ while running:
                 player.lives-=1
                 player.player_pos.x = screen.get_width()/2
                 if player.lives <= 0:
+                    player.lives = 4
                     current_stage = "menu"
+                    level1 = ALL.level(screen, 0)
             for alien_row in level1.alien_list:
                 for alien in alien_row:
                     alien_rect = pygame.Rect((alien.position.x - 35, alien.position.y - 35), (70, 70))
