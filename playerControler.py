@@ -8,6 +8,7 @@ class Player:
         self.player_rect = ""
         self.shoot_cooldown = 0
         self.lives = 4
+        self.kill_counter = 0
 
 
     def input(self, bullets):

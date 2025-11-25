@@ -149,8 +149,15 @@ while running:
                 player.player_pos.x = screen.get_width()/2
                 if player.lives <= 0:
                     current_stage = "menu"
-                    player.lives = 4
-                    break
+            for alien_row in level1.alien_list:
+                for alien in alien_row:
+                    alien_rect = pygame.Rect((alien.position.x - 35, alien.position.y - 35), (70, 70))
+                    if alien_rect.colliderect(bullet_rect) and bullet.type == 'p':
+                        bullets.remove(bullet)
+                        alien_row.remove(alien)
+                        player.kill_counter += 1
+
+            
 
     # Screen update and fps lock
     pygame.display.flip()
