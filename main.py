@@ -151,6 +151,34 @@ while running:
                     player.lives = 4
                     current_stage = "menu"
                     level1 = ALL.level(screen, 0)
+
+                    # Aliens & Bullets
+                    bullets = []
+                    ALIEN_SHOOT_EVENT = pygame.USEREVENT + 1
+                    pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
+
+                    # Player setup
+                    player = PC(screen)
+
+                    # Alien movement event
+                    ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
+                    pygame.time.set_timer(ALIEN_MOVE_EVENT, 600)
+
+                    current_movement = "right"
+
+                    alien_sprites = [
+                        pygame.image.load("./Sprites/Aliens/alien_1_sprite_1.png"),
+                        pygame.image.load("./Sprites/Aliens/alien_1_sprite_2.png")
+                    ]
+                    alien_sprites[0] = pygame.transform.scale(alien_sprites[0], (70, 70))
+                    alien_sprites[1] = pygame.transform.scale(alien_sprites[1], (70, 70))
+
+                    player_sprite = pygame.image.load("./Sprites/player_sprite.png")
+                    player_sprite = pygame.transform.scale(player_sprite, (70,40))
+
+                    animation_iter = 0
+                    ALIEN_ANIMATION_EVENT = pygame.USEREVENT + 3
+                    pygame.time.set_timer(ALIEN_ANIMATION_EVENT, 600)
             for alien_row in level1.alien_list:
                 for alien in alien_row:
                     alien_rect = pygame.Rect((alien.position.x - 35, alien.position.y - 35), (70, 70))
