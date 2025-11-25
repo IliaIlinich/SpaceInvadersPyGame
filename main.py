@@ -149,6 +149,7 @@ while running:
                 player.player_pos.x = screen.get_width()/2
                 if player.lives <= 0:
                     current_stage = "menu"
+                    player.lives = 4
                     break
 
     # Screen update and fps lock
