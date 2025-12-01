@@ -4,6 +4,7 @@ import itertools
 import alienLevels as ALL
 import scoreController as SC
 from playerControler import Player as PC
+import shieldController as SHC
 
 # Initialize Pygame
 pygame.init()
