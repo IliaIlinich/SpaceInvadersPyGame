@@ -28,7 +28,7 @@ pygame.time.set_timer(ALIEN_SHOOT_EVENT, alienShootCooldown)
 
 # Alien movement event
 ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
-pygame.time.set_timer(ALIEN_MOVE_EVENT, 600)
+pygame.time.set_timer(ALIEN_MOVE_EVENT, int(1 / level.difficulty * 500))
 currentMovement = "right"
 
 # Alien animation event
@@ -100,30 +100,22 @@ while running:
 
             # Alien shooting event
             elif event.type == ALIEN_SHOOT_EVENT:
-                alienShootCooldown = random.randint(3000, 4000)
-
-                # Calculating new shooting cooldown depending on the difficulty setting
-                if alienShootCooldown - level.difficulty * 1000 >= 1:
-                    alienShootCooldown -= level.difficulty * 1000
-                else:
-                    alienShootCooldown = 1 # Temporary fix
-                pygame.time.set_timer(ALIEN_SHOOT_EVENT, alienShootCooldown)
+                pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
 
                 # Choosing random 1 to 3 aliens to shoot
                 for _ in range(random.randint(1, 3)):
                     all_aliens = list(itertools.chain.from_iterable(level.alien_list))
                     alien = random.choice(all_aliens)
-                    alien.shoot(screen, bullets, random.choice(['s', 'w', 't']), level.difficulty)
+                    alien.shoot(screen, bullets, random.choice(['s', 'w', 't']))
 
             # Aliens movement event
             elif event.type == ALIEN_MOVE_EVENT:
-
                 # If current movement is to the right
-                for row in level.alien_list:
-                    for alien in row:
-                        alien.move_right()
                 if currentMovement == "right":
-                    if ALL.edgeReached(screen):
+                    for row in level.alien_list:
+                        for alien in row:
+                            alien.move_right()
+                    if ALL.edgeReachedRight(screen, level):
                         currentMovement = "down"
 
                 # If current movement is to the left
@@ -131,7 +123,7 @@ while running:
                     for row in level.alien_list:
                         for alien in row:
                             alien.move_left()
-                    if ALL.edgeReached(screen):
+                    if ALL.edgeReachedLeft(level):
                         currentMovement = "down"
 
                 # If currect movement is downwards
@@ -184,7 +176,7 @@ while running:
         # Player rendering
         screen.blit(player_sprite, (int(player.player_pos.x)-35, int(player.player_pos.y)))
         player_rect = pygame.Rect((int(player.player_pos.x)-35, int(player.player_pos.y)+10), (70,40))
-        PC.input(player, bullets, level.difficulty)
+        PC.input(player, bullets)
 
         # Aliens rendering
         level.draw_level(screen, alien_sprites, animation_iter)

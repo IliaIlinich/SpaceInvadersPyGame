@@ -18,10 +18,18 @@ class level:
                 screen.blit(alien_sprites[animation_iter], (alien.get_position().x - 35, alien.get_position().y - 30))
 
 # Function to check if aliens have reached the end of the screen
-def edgeReached(screen):
+def edgeReachedRight(screen, level):
     edgeReached = False
     all_aliens = list(itertools.chain.from_iterable(level.alien_list))
     for alien in all_aliens:
-        if alien.get_position().x >= screen.get_width() - 60 or alien.get_position().x <= 60:
+        if alien.get_position().x >= screen.get_width() - 60:
+            edgeReached = True
+    return edgeReached
+
+def edgeReachedLeft(level):
+    edgeReached = False
+    all_aliens = list(itertools.chain.from_iterable(level.alien_list))
+    for alien in all_aliens:
+        if alien.get_position().x <= 60:
             edgeReached = True
     return edgeReached

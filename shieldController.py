@@ -39,11 +39,11 @@ class Base:
     def preload_sprites(self):
         for i in range(0,5):
             for j in range(0,4):
-                print(self.shield_sprites[i][1][j])
+                #print(self.shield_sprites[i][1][j])
                 self.shield_sprites[i][1][j] = pygame.transform.scale(self.shield_sprites[i][1][j], (25,25))   
 
     def load_sprite(self, health):
-        print(health)
+        #print(health)
         self.new_sprite = ""
         if self.current_space in self.numbers:
             self.current_space = "nm"
