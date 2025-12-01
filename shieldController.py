@@ -10,7 +10,7 @@ shield_sprites =[["lt",[pygame.image.load("./Sprites/base/top_left/top_left1.png
 class Base:
     def __init__(self, shield_sprites):
         self.shield = [[["lt",4],["1",4],["2",4],["rt",4]],
-                       [["3",4],["lb",4],["rb",4],["4",4]]
+                       [["3",4],["lb",4],["rb",4],["4",4]],
                        [["5",4],["6",0],["7",0],["8",0]]]
         self.damaged_tile = ""
         self.numbers = ["1","2","3","4","5","6","7","8"]

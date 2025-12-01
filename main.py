@@ -136,7 +136,6 @@ while running:
                             current_movement = "left"
                         else:
                             current_movement = "right"
-
     screen.fill("black")
 
     mouse_pos = pygame.mouse.get_pos()
@@ -170,6 +169,8 @@ while running:
 
         # Draw aliens
         level.draw_level(screen, alien_sprites, animation_iter)
+
+        #draw shields
 
         # Move and draw bullets
         for bullet in bullets[:]:
