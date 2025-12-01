@@ -1,4 +1,4 @@
-import pygame
+import itertools
 import alienController as ALC
 
 class level:
@@ -16,3 +16,12 @@ class level:
         for row in self.alien_list:
             for alien in row:
                 screen.blit(alien_sprites[animation_iter], (alien.get_position().x - 35, alien.get_position().y - 30))
+
+# Function to check if aliens have reached the end of the screen
+def edgeReached(screen):
+    edgeReached = False
+    all_aliens = list(itertools.chain.from_iterable(level.alien_list))
+    for alien in all_aliens:
+        if alien.get_position().x >= screen.get_width() - 60 or alien.get_position().x <= 60:
+            edgeReached = True
+    return edgeReached

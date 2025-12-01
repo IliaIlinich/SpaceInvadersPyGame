@@ -6,38 +6,44 @@ import scoreController as SC
 from playerControler import Player as PC
 import shieldController as SHC
 
-# Initialize Pygame
+# Pygame initialisation
 pygame.init()
 font = pygame.font.SysFont('Arial', 24)
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
 
-# Level setup
+# Level initialisation
 level = ALL.level()
 
-# Aliens & Bullets
+# List of all bullets present on the screen
 bullets = []
+
+# Events initialisation
+
+# Alien shooting event
 ALIEN_SHOOT_EVENT = pygame.USEREVENT + 1
 alienShootCooldown = random.randint(3000, 4000)
-if alienShootCooldown - level.difficulty * 1000 >= 1:
-    alienShootCooldown -= level.difficulty * 1000
-else:
-  alienShootCooldown = 1
 pygame.time.set_timer(ALIEN_SHOOT_EVENT, alienShootCooldown)
-
-# Player setup
-player = PC(screen)
-playerScore = 0
-playerName = "Joe"
 
 # Alien movement event
 ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
 pygame.time.set_timer(ALIEN_MOVE_EVENT, 600)
+currentMovement = "right"
 
-current_movement = "right"
+# Alien animation event
+ALIEN_ANIMATION_EVENT = pygame.USEREVENT + 3
+pygame.time.set_timer(ALIEN_ANIMATION_EVENT, 600)
+animation_iter = 0
+
+# Player initialisation
+player = PC(screen)
+playerScore = 0
+playerName = "Joe"
 
 # Sprites initialisation
+
+# Alien sprites initialisation
 alien_sprites = [
     pygame.image.load("./Sprites/Aliens/alien_1_sprite_1.png"),
     pygame.image.load("./Sprites/Aliens/alien_1_sprite_2.png")
@@ -45,39 +51,36 @@ alien_sprites = [
 alien_sprites[0] = pygame.transform.scale(alien_sprites[0], (70, 70))
 alien_sprites[1] = pygame.transform.scale(alien_sprites[1], (70, 70))
 
+# Player sprites initialisation
 player_sprite = pygame.image.load("./Sprites/player_sprite.png")
 player_sprite = pygame.transform.scale(player_sprite, (70,40))
 
-animation_iter = 0
-ALIEN_ANIMATION_EVENT = pygame.USEREVENT + 3
-pygame.time.set_timer(ALIEN_ANIMATION_EVENT, 600)
-
+# Menu scene initialisation
 current_stage = "menu"
 menu_game_logo = pygame.image.load("./Sprites/Space_Invaders_Logo.jpg")
 menu_game_logo = pygame.transform.scale(menu_game_logo, (500, 500))
 
+# Buttons initialisation
 start_button = pygame.Rect(screen.get_width() * 0.25 - 50, screen.get_height() * 0.75, 100, 50)
 quit_button = pygame.Rect(screen.get_width() * 0.75 - 50, screen.get_height() * 0.75, 100, 50)
 score_button = pygame.Rect(screen.get_width() * 0.50 - 50, screen.get_height() * 0.75, 100, 50)
 
-def draw_scores(scores, font):
-    startX = screen.get_width() / 2 - 100
-    startY = 50
-    lineHeight=40
-    for i, entry in enumerate(scores):
-        text = f"{i+1}. {entry['name']} - {entry['score']}"
-        img = font.render(text, True, (255, 255, 255))
-        screen.blit(img, (startX, startY))
-        startY += lineHeight
-
+# Main loop
 while running:
+
     # Event handling
     for event in pygame.event.get():
+
+        # If the player quits the game
         if event.type == pygame.QUIT:
             running = False
+
+        # If the player presses escape to enter menu
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 current_stage = "menu"
+
+        # Mouse hover over buttons effects in the menu
         if current_stage == "menu" and event.type == pygame.MOUSEBUTTONDOWN:
             if start_button.collidepoint(event.pos):
                 current_stage = "game"
@@ -85,62 +88,75 @@ while running:
                 running = False
             if score_button.collidepoint(event.pos):
                 current_stage = "score"
+
+        # In game events
         if current_stage == "game":
+
+            # Alien animation event
             if event.type == ALIEN_ANIMATION_EVENT:
                 animation_iter += 1
                 if animation_iter >= len(alien_sprites):
                     animation_iter = 0
+
+            # Alien shooting event
             elif event.type == ALIEN_SHOOT_EVENT:
                 alienShootCooldown = random.randint(3000, 4000)
+
+                # Calculating new shooting cooldown depending on the difficulty setting
                 if alienShootCooldown - level.difficulty * 1000 >= 1:
                     alienShootCooldown -= level.difficulty * 1000
                 else:
-                  alienShootCooldown = 1
+                    alienShootCooldown = 1 # Temporary fix
                 pygame.time.set_timer(ALIEN_SHOOT_EVENT, alienShootCooldown)
+
+                # Choosing random 1 to 3 aliens to shoot
                 for _ in range(random.randint(1, 3)):
                     all_aliens = list(itertools.chain.from_iterable(level.alien_list))
-                    if all_aliens:
-                        alien = random.choice(all_aliens)
-                        alien.shoot(screen, bullets, random.choice(['s', 'w', 't']), level.difficulty)
+                    alien = random.choice(all_aliens)
+                    alien.shoot(screen, bullets, random.choice(['s', 'w', 't']), level.difficulty)
+
+            # Aliens movement event
             elif event.type == ALIEN_MOVE_EVENT:
-                if current_movement == "right":
-                    edge_reached = any(
-                        alien.get_position().x >= screen.get_width() - 60
-                        for row in level.alien_list for alien in row
-                    )
-                    if edge_reached:
-                        current_movement = "down"
-                    else:
-                        for row in level.alien_list:
-                            for alien in row:
-                                alien.move_right()
-                elif current_movement == "left":
-                    edge_reached = any(
-                        alien.get_position().x <= 60
-                        for row in level.alien_list for alien in row
-                    )
-                    if edge_reached:
-                        current_movement = "down"
-                    else:
-                        for row in level.alien_list:
-                            for alien in row:
-                                alien.move_left()
-                elif current_movement == "down":
+
+                # If current movement is to the right
+                for row in level.alien_list:
+                    for alien in row:
+                        alien.move_right()
+                if currentMovement == "right":
+                    if ALL.edgeReached(screen):
+                        currentMovement = "down"
+
+                # If current movement is to the left
+                elif currentMovement == "left":
+                    for row in level.alien_list:
+                        for alien in row:
+                            alien.move_left()
+                    if ALL.edgeReached(screen):
+                        currentMovement = "down"
+
+                # If currect movement is downwards
+                elif currentMovement == "down":
                     for row in level.alien_list:
                         for alien in row:
                             alien.move_down()
+
+                    # Checking wether next movement should be to the right or to the left
                     all_aliens = list(itertools.chain.from_iterable(level.alien_list))
-                    if all_aliens:
-                        rightmost_x = max(alien.get_position().x for alien in all_aliens)
-                        if rightmost_x >= screen.get_width() - 60:
-                            current_movement = "left"
-                        else:
-                            current_movement = "right"
+                    rightmost_x = max(alien.get_position().x for alien in all_aliens)
+                    if rightmost_x >= screen.get_width() - 60:
+                        currentMovement = "left"
+                    else:
+                        currentMovement = "right"
+
+    # Scene render
     screen.fill("black")
 
+    # Getting mouse position every frame
     mouse_pos = pygame.mouse.get_pos()
 
+    # Menu scene rendering
     if current_stage == "menu":
+
         # Menu rendering
         screen.blit(menu_game_logo, (screen.get_width() / 2 - 250, 50))
 
@@ -162,73 +178,64 @@ while running:
         text_quit = font.render('QUIT', True, quit_color)
         screen.blit(text_quit, text_quit.get_rect(center=quit_button.center))
 
+    # Game scene rendering
     elif current_stage == "game":
+
+        # Player rendering
         screen.blit(player_sprite, (int(player.player_pos.x)-35, int(player.player_pos.y)))
         player_rect = pygame.Rect((int(player.player_pos.x)-35, int(player.player_pos.y)+10), (70,40))
         PC.input(player, bullets, level.difficulty)
 
-        # Draw aliens
+        # Aliens rendering
         level.draw_level(screen, alien_sprites, animation_iter)
 
-        #draw shields
+        # Render shields
         shields = []
         for i in range(4):
             shields.append(SHC.Base(screen, [500, (i+1)*256]))
             shields[i].preload_sprites()
             shields[i].update_sprite()
 
-        # Move and draw bullets
-        for bullet in bullets[:]:
+        # Move bullets
+        for bullet in bullets:
             bullet.move(screen, bullets)
 
-        for bullet in bullets[:]:
+        # Bullets collisions handling
+        for bullet in bullets:
             bullet_rect = pygame.Rect(bullet.position, (5,10))
+
+            # Player collisions handling
             if player_rect.colliderect(bullet_rect):
+
+                # Temporary fix of a trying to delete not present bullet error
                 try:
                     bullets.remove(bullet)
                 except ValueError:
                     continue
-                player.lives-=1
-                player.player_pos.x = screen.get_width()/2
+                player.lives -= 1
+                player.player_pos.x = screen.get_width() / 2
+
+                # If the player is dead
                 if player.lives <= 0:
-                    
+
+                    # Score upload to JSON file
                     score = SC.Score(playerName, playerScore)
                     score.pushScoreData()
+
+                    # Reset score for the next game
                     playerScore = 0
 
+                    # Player reinitialisation
                     player.lives = 4
+
+                    # Game reset
                     current_stage = "menu"
                     level = ALL.level()
-
-                    # Aliens & Bullets
                     bullets = []
-                    ALIEN_SHOOT_EVENT = pygame.USEREVENT + 1
                     pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
+                    currentMovement = "right"
 
-                    # Player setup
-                    player = PC(screen)
-
-                    # Alien movement event
-                    ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
-                    pygame.time.set_timer(ALIEN_MOVE_EVENT, 600)
-
-                    current_movement = "right"
-
-                    alien_sprites = [
-                        pygame.image.load("./Sprites/Aliens/alien_1_sprite_1.png"),
-                        pygame.image.load("./Sprites/Aliens/alien_1_sprite_2.png")
-                    ]
-                    alien_sprites[0] = pygame.transform.scale(alien_sprites[0], (70, 70))
-                    alien_sprites[1] = pygame.transform.scale(alien_sprites[1], (70, 70))
-
-                    player_sprite = pygame.image.load("./Sprites/player_sprite.png")
-                    player_sprite = pygame.transform.scale(player_sprite, (70,40))
-
-                    animation_iter = 0
-                    ALIEN_ANIMATION_EVENT = pygame.USEREVENT + 3
-                    pygame.time.set_timer(ALIEN_ANIMATION_EVENT, 600)
-
-
+            # Shields collision handling
             for shield in shields:
                 y = -1
                 for row in shield.get_rect():
@@ -237,31 +244,42 @@ while running:
                     for section in row:
                         x += 1
                         if section.colliderect(bullet_rect):
+                            # Temporary fix of a trying to delete not present bullet error
                             try:
                                 bullets.remove(bullet)
                             except ValueError:
                                 continue
                             shield.damage_tile([y,x])
 
+            # Aliens collision handling
             for alien_row in level.alien_list:
                 for alien in alien_row:
                     alien_rect = pygame.Rect((alien.position.x - 35, alien.position.y - 35), (70, 70))
+
+                    # If an alien collides with player's bullet
                     if alien_rect.colliderect(bullet_rect) and bullet.type == 'p':
+
+                        # Temporary fix of a trying to delete not present bullet error
                         try:
                             bullets.remove(bullet)
                         except ValueError:
                             continue
                         alien_row.remove(alien)
-                        player.kill_counter += 1
+
+                        # Incrementing player score by 100 for killing a normal alien
                         playerScore += 100
-                        if player.kill_counter % 55 == 0:
+
+                        # If all aliens were destroyed
+                        if playerScore % 5500 == 0:
                             currentDifficulty = level.difficulty
-                            level.__init__()
+                            level = ALL.level()
                             level.difficulty = currentDifficulty + 1
+
+    # Score scene rendering
     elif current_stage == "score":
-      data = SC.pullScoreData()
-      top10 = sorted(data, key=lambda x: x["score"], reverse=True)[:10]
-      draw_scores(top10, font)
+        data = SC.pullScoreData()
+        scores = sorted(data, key=lambda x: x["score"], reverse=True)[:10]
+        SC.render_scores(scores, font, screen)
 
     # Screen update and fps lock
     pygame.display.flip()

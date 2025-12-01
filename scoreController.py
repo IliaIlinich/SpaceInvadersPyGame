@@ -28,14 +28,13 @@ def pullScoreData():
     with open("highestScores.json", "r") as f:
         return json.load(f)
 
-'''
-scoreTest1 = Score("john", 300)
-scoreTest1.pushScoreData()
-
-scoreTest2 = Score("anna", 500)
-scoreTest2.pushScoreData()
-
-pulledData = pullScoreData()
-for name in pulledData:
-    print(name["name"])
-'''
+# Function to render score scene
+def render_scores(scores, font, screen):
+    startX = screen.get_width() / 2 - 100
+    startY = 50
+    lineHeight=40
+    for i, entry in enumerate(scores):
+        text = f"{i+1}. {entry['name']} - {entry['score']}"
+        img = font.render(text, True, (255, 255, 255))
+        screen.blit(img, (startX, startY))
+        startY += lineHeight
