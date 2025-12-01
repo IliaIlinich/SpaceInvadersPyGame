@@ -26,13 +26,10 @@ class Base:
 
     def update_sprite(self):
         if self.damaged_tile == "":
-            looping = True
-            while looping:
-                for row in range(0,3):
-                    for column in range(0,4):
-                        self.current_space = self.shield[row][column][0]
-                        self.new_sprite = self.load_sprite()
-                running = False
+            for row in range(0,3):
+                for column in range(0,4):
+                    self.current_space = self.shield[row][column][0]
+                    self.new_sprite = self.load_sprite()
         else:
             self.current_space = self.damaged_tile
             self.new_sprite = self.load_sprite()
@@ -45,6 +42,8 @@ class Base:
 
     def load_sprite(self):
         self.new_sprite = ""
+        if self.current_space in self.numbers:
+            self.current_space = "nm"
         for i in range(0,5):
             for j in range(0,4):
                 if self.current_space == self.shield_sprites[i][0]:
