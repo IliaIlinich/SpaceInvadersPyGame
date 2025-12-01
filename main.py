@@ -171,6 +171,11 @@ while running:
         level.draw_level(screen, alien_sprites, animation_iter)
 
         #draw shields
+        shields = []
+        for i in range(4):
+            shields.append(SHC.Base(screen, [500, (i+1)*256]))
+            shields[i].preload_sprites()
+            shields[i].update_sprite()
 
         # Move and draw bullets
         for bullet in bullets[:]:
@@ -222,6 +227,22 @@ while running:
                     animation_iter = 0
                     ALIEN_ANIMATION_EVENT = pygame.USEREVENT + 3
                     pygame.time.set_timer(ALIEN_ANIMATION_EVENT, 600)
+
+
+            for shield in shields:
+                y = -1
+                for row in shield.get_rect():
+                    y += 1
+                    x = -1
+                    for section in row:
+                        x += 1
+                        if section.colliderect(bullet_rect):
+                            try:
+                                bullets.remove(bullet)
+                            except ValueError:
+                                continue
+                            shield.damage_tile([y,x])
+
             for alien_row in level.alien_list:
                 for alien in alien_row:
                     alien_rect = pygame.Rect((alien.position.x - 35, alien.position.y - 35), (70, 70))
