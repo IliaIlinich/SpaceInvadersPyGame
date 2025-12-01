@@ -1,16 +1,16 @@
 import pygame
 
 class Bullet():
-    def __init__(self, pos_x, pos_y, type):
+    def __init__(self, pos_x, pos_y, type, difficulty):
         self.active = False
         self.position = pygame.Vector2(pos_x, pos_y)
         self.type = type # s, w, t, p - square bullet, wave bullet, triangle bullet, player bullet. Each with different speed.
         if self.type == 's':
-            self.direction = [0, 7]
+            self.direction = [0, 7 * difficulty]
         elif self.type == 'w':
-            self.direction = [0, 5]
+            self.direction = [0, 5 * difficulty]
         elif self.type == 't':
-            self.direction = [0, 3]
+            self.direction = [0, 3 * difficulty]
         elif self.type == "p":
             self.direction = [0,-5]
 

@@ -11,7 +11,7 @@ class Player:
         self.kill_counter = 0
 
 
-    def input(self, bullets):
+    def input(self, bullets, difficulty):
         self.shoot_cooldown -= 1
         keys = pygame.key.get_pressed()
         speed = 5
@@ -21,9 +21,9 @@ class Player:
             self.player_pos.x += speed
         if keys[pygame.K_SPACE]:
             if self.shoot_cooldown <= 0:
-                self.shoot_cooldown = 60
-                self.shoot(bullets)
+                self.shoot_cooldown = 5
+                self.shoot(bullets, difficulty)
     
-    def shoot(self, bullets):
-        new_bullet = bulletController.Bullet(self.player_pos.x, self.player_pos.y, "p")
+    def shoot(self, bullets, difficulty):
+        new_bullet = bulletController.Bullet(self.player_pos.x, self.player_pos.y, "p", difficulty)
         new_bullet.draw(self.screen, bullets)

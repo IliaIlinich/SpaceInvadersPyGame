@@ -2,9 +2,9 @@ import pygame
 import alienController as ALC
 
 class level:
-    def __init__(self, screen, difficulty):
+    def __init__(self):
         self.alien_list = [[]]
-        self.difficulty = difficulty
+        self.difficulty = 1
         for i in range(5):
             alien_line = []
             for j in range(11):
