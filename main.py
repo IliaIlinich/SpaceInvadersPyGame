@@ -75,7 +75,7 @@ quit_button = pygame.Rect(screen.get_width() * 0.75 - 50, screen.get_height() * 
 score_button = pygame.Rect(screen.get_width() * 0.50 - 50, screen.get_height() * 0.75, 100, 50)
 
 def game_lost():
-    global playerScore, playerName, current_stage, level, bullets, currentMovement
+    global playerScore, playerName, current_stage, level, bullets, currentMovement, currentAlienSpeed
     # Score upload to JSON file
     score = SC.Score(playerName, playerScore)
     score.pushScoreData()
@@ -90,7 +90,10 @@ def game_lost():
     current_stage = "menu"
     level = ALL.level()
     bullets = []
-    pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
+    level.difficulty = 1
+    currentAlienSpeed = int(1 / level.difficulty * 500)
+    pygame.time.set_timer(ALIEN_MOVE_EVENT, currentAlienSpeed)
+
     currentMovement = "right"
 
 def initshields():
