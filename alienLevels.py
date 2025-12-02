@@ -15,7 +15,7 @@ class level:
                 alienType = 3
             alien_line = []
             for j in range(11):
-                alien = ALC.Alien(60 + j * 70, 40 + i * 70, alienType)
+                alien = ALC.Alien(100 + j * 70, 100 + i * 70, alienType)
                 alien_line.append(alien)
             self.alien_list.append(alien_line)
     

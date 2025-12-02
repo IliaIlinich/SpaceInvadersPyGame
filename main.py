@@ -9,7 +9,7 @@ import shieldController as SHC
 # Pygame initialisation
 pygame.init()
 font = pygame.font.SysFont('Arial', 24)
-screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 running = True
 
@@ -41,6 +41,7 @@ animation_iter = 0
 player = PC(screen)
 playerScore = 0
 playerName = "Joe"
+isDead = False
 
 # Sprites initialisation
 
@@ -100,7 +101,7 @@ def initshields():
     global shields
     shields = []
     for i in range(4):
-        shields.append(SHC.Base(screen, [500, (i+1)*256]))
+        shields.append(SHC.Base(screen, [screen.get_height() * 0.8, screen.get_width() * 0.185 + (i)*screen.get_width() * 0.185]))
 
 # Main loop
 while running:
@@ -273,11 +274,13 @@ while running:
 
                     # If an alien collides with player's bullet
                     if alien_rect.colliderect(bullet_rect) and bullet.type == 'p':
+
                         # Changing the speed of alinens, so the smaller is their amount on the screen, the faster they move
                         currentAlienSpeed -= 5
                         if currentAlienSpeed <= 100:
                             currentAlienSpeed = 100
                         pygame.time.set_timer(ALIEN_MOVE_EVENT, currentAlienSpeed)
+
                         # Temporary fix of a trying to delete not present bullet error
                         try:
                             bullets.remove(bullet)
@@ -299,6 +302,7 @@ while running:
                             level = ALL.level()
                             level.difficulty = currentDifficulty + 1
                             currentAlienSpeed = int(1 / level.difficulty * 500)
+                            currentMovement = "right"
 
         # Checking if aliens have reached the bottom
         all_aliens = list(itertools.chain.from_iterable(level.alien_list))
