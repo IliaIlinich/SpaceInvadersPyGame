@@ -68,8 +68,10 @@ class Base:
             rects.append([])
             for x in range(4):
                 if self.shield[y][x][0] == "0":
+                    rects[y].append(pygame.Rect((0,0), (0,0)))
                     continue
                 rects[y].append(pygame.Rect((self.location[1]+x*25, self.location[0]+y*25), (25,25)))
+        print(rects)
         return rects
 
     def damage_tile(self, tile):

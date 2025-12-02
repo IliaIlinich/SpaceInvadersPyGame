@@ -93,6 +93,12 @@ def game_lost():
     pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
     currentMovement = "right"
 
+def initshields():
+    global shields
+    shields = []
+    for i in range(4):
+        shields.append(SHC.Base(screen, [500, (i+1)*256]))
+
 # Main loop
 while running:
     # Event handling
@@ -111,6 +117,7 @@ while running:
         if current_stage == "menu" and event.type == pygame.MOUSEBUTTONDOWN:
             if start_button.collidepoint(event.pos):
                 current_stage = "game"
+                initshields()
             if quit_button.collidepoint(event.pos):
                 running = False
             if score_button.collidepoint(event.pos):
@@ -214,11 +221,9 @@ while running:
         level.draw_level(screen, alien_1_sprites, alien_2_sprites, alien_3_sprites, animation_iter)
 
         # Render shields
-        shields = []
-        for i in range(4):
-            shields.append(SHC.Base(screen, [500, (i+1)*256]))
-            shields[i].preload_sprites()
-            shields[i].update_sprite()
+        for shield in shields:
+            shield.preload_sprites()
+            shield.update_sprite()
 
         # Move bullets
         for bullet in bullets:
@@ -245,13 +250,10 @@ while running:
 
             # Shields collision handling
             for shield in shields:
-                y = -1
-                for row in shield.get_rect():
-                    y += 1
-                    x = -1
-                    for section in row:
-                        x += 1
-                        if section.colliderect(bullet_rect):
+                rects = shield.get_rect()
+                for y in range(len(rects)):
+                    for x in range(len(rects[y])):       
+                        if rects[y][x].colliderect(bullet_rect):
                             # Temporary fix of a trying to delete not present bullet error
                             try:
                                 bullets.remove(bullet)
