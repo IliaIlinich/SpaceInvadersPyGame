@@ -20,7 +20,7 @@ class Player:
             self.player_pos.x += speed
         if keys[pygame.K_SPACE]:
             if self.shoot_cooldown <= 0:
-                self.shoot_cooldown = 5
+                self.shoot_cooldown = 40
                 self.shoot(bullets)
     
     def shoot(self, bullets):

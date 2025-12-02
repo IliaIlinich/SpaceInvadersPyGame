@@ -74,6 +74,25 @@ start_button = pygame.Rect(screen.get_width() * 0.25 - 50, screen.get_height() *
 quit_button = pygame.Rect(screen.get_width() * 0.75 - 50, screen.get_height() * 0.75, 100, 50)
 score_button = pygame.Rect(screen.get_width() * 0.50 - 50, screen.get_height() * 0.75, 100, 50)
 
+def game_lost():
+    global playerScore, playerName, current_stage, level, bullets, currentMovement
+    # Score upload to JSON file
+    score = SC.Score(playerName, playerScore)
+    score.pushScoreData()
+
+    # Reset score for the next game
+    playerScore = 0
+
+    # Player reinitialisation
+    player.lives = 4
+
+    # Game reset
+    current_stage = "menu"
+    level = ALL.level()
+    bullets = []
+    pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
+    currentMovement = "right"
+
 # Main loop
 while running:
     # Event handling
@@ -222,23 +241,7 @@ while running:
 
                 # If the player is dead
                 if player.lives <= 0:
-
-                    # Score upload to JSON file
-                    score = SC.Score(playerName, playerScore)
-                    score.pushScoreData()
-
-                    # Reset score for the next game
-                    playerScore = 0
-
-                    # Player reinitialisation
-                    player.lives = 4
-
-                    # Game reset
-                    current_stage = "menu"
-                    level = ALL.level()
-                    bullets = []
-                    pygame.time.set_timer(ALIEN_SHOOT_EVENT, random.randint(3000, 4000))
-                    currentMovement = "right"
+                    game_lost()
 
             # Shields collision handling
             for shield in shields:
@@ -292,6 +295,12 @@ while running:
                             level.difficulty = currentDifficulty + 1
                             currentAlienSpeed = int(1 / level.difficulty * 500)
 
+        # Checking if aliens have reached the bottom
+        all_aliens = list(itertools.chain.from_iterable(level.alien_list))
+        bottomMostY = max(alien.get_position().y for alien in all_aliens)
+        if bottomMostY >= screen.get_height() - 100:
+            game_lost()
+        
     # Score scene rendering
     elif current_stage == "score":
         data = SC.pullScoreData()
