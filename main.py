@@ -15,6 +15,7 @@ running = True
 
 # Level initialisation
 level = ALL.level()
+currentAlienSpeed = int(1 / level.difficulty * 500)
 
 # List of all bullets present on the screen
 bullets = []
@@ -28,7 +29,7 @@ pygame.time.set_timer(ALIEN_SHOOT_EVENT, alienShootCooldown)
 
 # Alien movement event
 ALIEN_MOVE_EVENT = pygame.USEREVENT + 2
-pygame.time.set_timer(ALIEN_MOVE_EVENT, int(1 / level.difficulty * 500))
+pygame.time.set_timer(ALIEN_MOVE_EVENT, currentAlienSpeed)
 currentMovement = "right"
 
 # Alien animation event
@@ -44,12 +45,20 @@ playerName = "Joe"
 # Sprites initialisation
 
 # Alien sprites initialisation
-alien_sprites = [
+alien_1_sprites = [
     pygame.image.load("./Sprites/Aliens/alien_1_sprite_1.png"),
     pygame.image.load("./Sprites/Aliens/alien_1_sprite_2.png")
 ]
-alien_sprites[0] = pygame.transform.scale(alien_sprites[0], (70, 70))
-alien_sprites[1] = pygame.transform.scale(alien_sprites[1], (70, 70))
+
+alien_2_sprites = [
+    pygame.image.load("./Sprites/Aliens/alien_2_sprite_1.png"),
+    pygame.image.load("./Sprites/Aliens/alien_2_sprite_2.png")
+]
+
+alien_3_sprites = [
+    pygame.image.load("./Sprites/Aliens/alien_3_sprite_1.png"),
+    pygame.image.load("./Sprites/Aliens/alien_3_sprite_2.png")
+]
 
 # Player sprites initialisation
 player_sprite = pygame.image.load("./Sprites/player_sprite.png")
@@ -67,7 +76,6 @@ score_button = pygame.Rect(screen.get_width() * 0.50 - 50, screen.get_height() *
 
 # Main loop
 while running:
-
     # Event handling
     for event in pygame.event.get():
 
@@ -95,7 +103,7 @@ while running:
             # Alien animation event
             if event.type == ALIEN_ANIMATION_EVENT:
                 animation_iter += 1
-                if animation_iter >= len(alien_sprites):
+                if animation_iter >= 2:
                     animation_iter = 0
 
             # Alien shooting event
@@ -106,7 +114,12 @@ while running:
                 for _ in range(random.randint(1, 3)):
                     all_aliens = list(itertools.chain.from_iterable(level.alien_list))
                     alien = random.choice(all_aliens)
-                    alien.shoot(screen, bullets, random.choice(['s', 'w', 't']))
+                    if alien.alienType == 1:
+                        alien.shoot(screen, bullets, 's')
+                    elif alien.alienType == 2:
+                        alien.shoot(screen, bullets, 'w')
+                    else:
+                        alien.shoot(screen, bullets, 't')
 
             # Aliens movement event
             elif event.type == ALIEN_MOVE_EVENT:
@@ -179,7 +192,7 @@ while running:
         PC.input(player, bullets)
 
         # Aliens rendering
-        level.draw_level(screen, alien_sprites, animation_iter)
+        level.draw_level(screen, alien_1_sprites, alien_2_sprites, alien_3_sprites, animation_iter)
 
         # Render shields
         shields = []
@@ -244,13 +257,19 @@ while running:
                             shield.damage_tile([y,x])
 
             # Aliens collision handling
+            row_cnt = -1
             for alien_row in level.alien_list:
+                row_cnt += 1
                 for alien in alien_row:
                     alien_rect = pygame.Rect((alien.position.x - 35, alien.position.y - 35), (70, 70))
 
                     # If an alien collides with player's bullet
                     if alien_rect.colliderect(bullet_rect) and bullet.type == 'p':
-
+                        # Changing the speed of alinens, so the smaller is their amount on the screen, the faster they move
+                        currentAlienSpeed -= 5
+                        if currentAlienSpeed <= 100:
+                            currentAlienSpeed = 100
+                        pygame.time.set_timer(ALIEN_MOVE_EVENT, currentAlienSpeed)
                         # Temporary fix of a trying to delete not present bullet error
                         try:
                             bullets.remove(bullet)
@@ -258,14 +277,20 @@ while running:
                             continue
                         alien_row.remove(alien)
 
-                        # Incrementing player score by 100 for killing a normal alien
-                        playerScore += 100
+                        # Incrementing player score by dedicated number for killing corresponding alien type
+                        if alien.alienType == 1:
+                            playerScore += 300
+                        elif alien.alienType == 2:
+                            playerScore += 200
+                        else:
+                            playerScore += 100
 
                         # If all aliens were destroyed
-                        if playerScore % 5500 == 0:
+                        if len(list(itertools.chain.from_iterable(level.alien_list))) == 0:
                             currentDifficulty = level.difficulty
                             level = ALL.level()
                             level.difficulty = currentDifficulty + 1
+                            currentAlienSpeed = int(1 / level.difficulty * 500)
 
     # Score scene rendering
     elif current_stage == "score":

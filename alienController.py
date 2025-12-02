@@ -3,8 +3,9 @@ import bulletController
 
 # General alien class
 class Alien:
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, alienType):
         self.position = pygame.Vector2(pos_x, pos_y)
+        self.alienType = alienType # 1, 2 ,3 are possible types
 
     def get_position(self):
         return self.position
