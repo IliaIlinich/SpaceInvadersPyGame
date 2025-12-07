@@ -40,7 +40,6 @@ animation_iter = 0
 # Player initialisation
 player = PC(screen)
 playerScore = 0
-playerName = "Joe"
 isDead = False
 
 # Sprites initialisation
@@ -78,7 +77,7 @@ score_button = pygame.Rect(screen.get_width() * 0.50 - 50, screen.get_height() *
 def game_lost():
     global playerScore, playerName, current_stage, level, bullets, currentMovement, currentAlienSpeed
     # Score upload to JSON file
-    score = SC.Score(playerName, playerScore)
+    score = SC.Score(playerScore)
     score.pushScoreData()
 
     # Reset score for the next game

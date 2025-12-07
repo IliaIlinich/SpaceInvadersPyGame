@@ -2,12 +2,11 @@ import json
 import os
 
 class Score:
-    def __init__(self, name, score):
+    def __init__(self, score):
         self.score = score
-        self.name = name
     
     def pushScoreData(self):
-        new_entry = {"name": self.name, "score": self.score}
+        new_entry = {"score": self.score}
         size = os.path.getsize("highestScores.json")
         if size > 0:
             with open("highestScores.json", "r") as f:
