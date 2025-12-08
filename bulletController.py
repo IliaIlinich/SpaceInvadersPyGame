@@ -40,5 +40,5 @@ class Bullet():
             pygame.draw.rect(screen, "white", (self.position.x, self.position.y, 5, 10))
         else:
             print("Unknown bullet type")
-        if self.position.y > 720 or self.position.y < 0:
+        if self.position.y > screen.get_height() or self.position.y < 0:
             bullets.remove(self)
