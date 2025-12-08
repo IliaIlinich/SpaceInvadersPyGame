@@ -115,6 +115,12 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 current_stage = "menu"
+                # Game reset
+                level = ALL.level()
+                bullets = []
+                level.difficulty = 1
+                currentAlienSpeed = int(1 / level.difficulty * 500)
+                pygame.time.set_timer(ALIEN_MOVE_EVENT, currentAlienSpeed)
 
         # Mouse hover over buttons effects in the menu
         if current_stage == "menu" and event.type == pygame.MOUSEBUTTONDOWN:
