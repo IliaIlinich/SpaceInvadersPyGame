@@ -19,13 +19,6 @@ class Base:
         self.screen = screen
         self.location = location
     
-    #update the damage on the shield segments
-    def update_damage(self):
-        for row in range(0,3):
-            for column in range(0,4):
-                if self.damaged_tile == self.shield[row][column][0]:
-                    self.shield[row][column][1] -= 1
-        self.check_health()
 
     def update_sprite(self):
         for row in range(0,3):
@@ -39,11 +32,9 @@ class Base:
     def preload_sprites(self):
         for i in range(0,5):
             for j in range(0,4):
-                #print(self.shield_sprites[i][1][j])
                 self.shield_sprites[i][1][j] = pygame.transform.scale(self.shield_sprites[i][1][j], (25,25))   
 
     def load_sprite(self, health):
-        #print(health)
         self.new_sprite = ""
         if self.current_space in self.numbers:
             self.current_space = "nm"
